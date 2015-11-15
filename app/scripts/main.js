@@ -3,10 +3,9 @@ if (location.hash == '#initiator') {
 
     webrtcInitiator.createOffer();
 
-    setTimeout(function () {
-        var offerJSON = webrtcInitiator.getOffer();
+    webrtcInitiator.onOfferCreated = function (offerJSON)  {
         var answer = prompt('Please cut the offer and paste the answer', JSON.stringify(offerJSON));
-    }, 1000);
+    }
 }
 
 
@@ -15,4 +14,8 @@ if (location.hash == '#answerer') {
 
     var offer = prompt('Please paste the offer', '');
     webrtcAnswerer.createAnswer(offer);
+
+    webrtcAnswerer.onAnswerCreated = function (answerJSON)  {
+        alert(JSON.stringify(answerJSON))
+    }
 }

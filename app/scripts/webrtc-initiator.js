@@ -7,9 +7,10 @@ class webrtcInitiator extends webrtc {
         var that = this;
 
         this.peerConnection.createOffer(function(offer) {
-            that.peerConnection.setLocalDescription(new RTCSessionDescription(offer), function() {
-                that.offer = offer
-            }, errorCatcher);
+            that.offer = offer;
+            that.onOfferCreated(offer)
+
+            that.peerConnection.setLocalDescription(offer, function () {}, function () {});
         }, errorCatcher, that.sdpConstraints);
     }
 

@@ -7,10 +7,7 @@ class webrtc {
         };
 
         this.constraints = {
-            'optional': [
-                { 'DtlsSrtpKeyAgreement': true },
-                {'RtpDataChannels': true }
-            ]
+            'optional': [{ 'DtlsSrtpKeyAgreement': true }]
         };
 
         this.sdpConstraints = {
@@ -21,22 +18,20 @@ class webrtc {
         };
 
         this.peerConnection = new RTCPeerConnection(this.config,  this.constraints);
-        this.peerConnection.onicecandidate = function (e) {
-            if (e.candidate == null) {
-                console.log(that.peerConnection.localDescription);
-            }
-        };
 
         this.peerConnection.onsignalingstatechange = this.onSignalingStateChange;
         this.peerConnection.oniceconnectionstatechange = this.onIceConnectionStateChange;
         this.peerConnection.onicegatheringstatechange = this.onIceGatheringStateChange;
 
-        this.dataChannel = this.peerConnection.createDataChannel('opengroup', { reliable: true });
-
-        this.dataChannel.onopen = this.onDataChannelOpen;
-        this.dataChannel.onmessage = this.onDataChannelMessage;
-        this.dataChannel.onclose = this.onDataChannelClose;
-        this.dataChannel.onerror = this.onDataChannelError;
+        try {
+            this.dataChannel = this.peerConnection.createDataChannel('opengroup', {reliable: true});
+            this.dataChannel.onopen = this.onDataChannelOpen;
+            this.dataChannel.onmessage = this.onDataChannelMessage;
+            this.dataChannel.onclose = this.onDataChannelClose;
+            this.dataChannel.onerror = this.onDataChannelError;
+        } catch(e) {
+            console.log('No data channel')
+        }
     }
 
     onSignalingStateChange(state) {
@@ -57,6 +52,13 @@ class webrtc {
 
     onDataChannelMessage(e) {
         console.log('message:', e.data);
+
+        if (e.data.charCodeAt(0) == 2) {
+            // The first message we get from Firefox (but not Chrome)
+            // is literal ASCII 2 and I don't understand why -- if we
+            // leave it in, JSON.parse() will barf.
+            return;
+        }
     }
 
     onDataChannelClose(e) {

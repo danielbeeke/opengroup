@@ -1,6 +1,14 @@
 class webrtcAnswerer extends webrtc {
     constructor() {
         super();
+        var that = this;
+
+        this.peerConnection.onicecandidate = function (e) {
+            if (e.candidate == null) {
+                console.log(that.peerConnection.localDescription)
+                that.onAnswerCreated(that.peerConnection.localDescription)
+            }
+        };
     }
 
     createAnswer(offerJSON) {
