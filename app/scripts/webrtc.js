@@ -1,11 +1,16 @@
 class webrtc {
     constructor() {
+        var that = this;
+
         this.config = {
             'iceServers': [{ 'url': 'stun:23.21.150.121' }]
         };
 
         this.constraints = {
-            'optional': [{ 'DtlsSrtpKeyAgreement': true }]
+            'optional': [
+                { 'DtlsSrtpKeyAgreement': true },
+                {'RtpDataChannels': true }
+            ]
         };
 
         this.sdpConstraints = {
@@ -16,11 +21,53 @@ class webrtc {
         };
 
         this.peerConnection = new RTCPeerConnection(this.config,  this.constraints);
-        this.dataChannel = this.peerConnection.createDataChannel('opengroup', { reliable:true });
+        this.peerConnection.onicecandidate = function (e) {
+            if (e.candidate == null) {
+                console.log(that.peerConnection.localDescription);
+            }
+        };
 
-        this.dataChannel.onmessage = function(e){console.log("DC message:" +e.data);};
-        this.dataChannel.onopen = function(){console.log("------ DATACHANNEL OPENED ------");};
-        this.dataChannel.onclose = function(){console.log("------- DC closed! -------")};
-        this.dataChannel.onerror = function(){console.log("DC ERROR!!!")};
+        this.peerConnection.onsignalingstatechange = this.onSignalingStateChange;
+        this.peerConnection.oniceconnectionstatechange = this.onIceConnectionStateChange;
+        this.peerConnection.onicegatheringstatechange = this.onIceGatheringStateChange;
+
+        this.dataChannel = this.peerConnection.createDataChannel('opengroup', { reliable: true });
+
+        this.dataChannel.onopen = this.onDataChannelOpen;
+        this.dataChannel.onmessage = this.onDataChannelMessage;
+        this.dataChannel.onclose = this.onDataChannelClose;
+        this.dataChannel.onerror = this.onDataChannelError;
     }
+
+    onSignalingStateChange(state) {
+        console.info('signaling state change:', state);
+    }
+
+    onIceConnectionStateChange(state) {
+        console.info('ice connection state change:', state);
+    }
+
+    onIceGatheringStateChange(state) {
+        console.info('ice gathering state change:', state);
+    }
+
+    onDataChannelOpen(e) {
+        console.log('data channel connect');
+    }
+
+    onDataChannelMessage(e) {
+        console.log('message:', e.data);
+    }
+
+    onDataChannelClose(e) {
+        console.log('data channel close');
+    }
+
+    onDataChannelError(e) {
+        console.log('data channel error', e);
+    }
+}
+
+window.errorCatcher = function (e) {
+    console.log(e)
 }

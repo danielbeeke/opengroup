@@ -15,7 +15,3 @@ class webrtcAnswerer extends webrtc {
 
     }
 }
-
-var errorCatcher = function (e) {
-    console.log(e)
-};
