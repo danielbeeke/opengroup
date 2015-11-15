@@ -1,21 +1,21 @@
 class webrtcAnswerer extends webrtc {
     constructor() {
         super();
-
-        this.peerConnection = new RTCPeerConnection(this.config,  this.constraints);
-        this.dataChannel = this.peerConnection.createDataChannel('opengroup', { reliable:true });
-
-        this.dataChannel.onmessage = function(e){console.log("DC message:" +e.data);};
-        this.dataChannel.onopen = function(){console.log("------ DATACHANNEL OPENED ------");};
-        this.dataChannel.onclose = function(){console.log("------- DC closed! -------")};
-        this.dataChannel.onerror = function(){console.log("DC ERROR!!!")};
     }
 
-    createAnswer(offer) {
-        var that = this
+    createAnswer(offerJSON) {
+        var that = this;
+        var offer = new RTCSessionDescription(JSON.parse(offerJSON));
+
+        this.peerConnection.setRemoteDescription(offer);
+
+        this.peerConnection.createAnswer(function (answer) {
+            that.peerConnection.setLocalDescription(answer);
+        }, errorCatcher);
+
     }
 }
 
 var errorCatcher = function (e) {
     console.log(e)
-}
+};
