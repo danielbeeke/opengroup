@@ -7,7 +7,10 @@ class webrtc {
         };
 
         this.constraints = {
-            'optional': [{ 'DtlsSrtpKeyAgreement': true }]
+            'optional': [{
+                'DtlsSrtpKeyAgreement': true,
+                'RtpDataChannels': true
+            }]
         };
 
         this.sdpConstraints = {
@@ -22,9 +25,10 @@ class webrtc {
         this.peerConnection.onsignalingstatechange = this.onSignalingStateChange;
         this.peerConnection.oniceconnectionstatechange = this.onIceConnectionStateChange;
         this.peerConnection.onicegatheringstatechange = this.onIceGatheringStateChange;
+        this.peerConnection.onconnection = this.onConnection;
 
         try {
-            this.dataChannel = this.peerConnection.createDataChannel('opengroup', {reliable: true});
+            this.dataChannel = this.peerConnection.createDataChannel('opengroup', { reliable: true });
             this.dataChannel.onopen = this.onDataChannelOpen;
             this.dataChannel.onmessage = this.onDataChannelMessage;
             this.dataChannel.onclose = this.onDataChannelClose;
@@ -32,6 +36,14 @@ class webrtc {
         } catch(e) {
             console.log('No data channel')
         }
+    }
+
+    sendMessage(message) {
+        this.dataChannel.send(message);
+    }
+
+    onConnection() {
+        console.info('Datachannel connected');
     }
 
     onSignalingStateChange(state) {
@@ -51,7 +63,7 @@ class webrtc {
     }
 
     onDataChannelMessage(e) {
-        console.log('message:', e.data);
+        console.log('message');
 
         if (e.data.charCodeAt(0) == 2) {
             // The first message we get from Firefox (but not Chrome)
@@ -59,10 +71,12 @@ class webrtc {
             // leave it in, JSON.parse() will barf.
             return;
         }
+
+        console.log('message:', e.data);
     }
 
     onDataChannelClose(e) {
-        console.log('data channel close');
+        console.log('data channel close', e);
     }
 
     onDataChannelError(e) {
@@ -71,5 +85,5 @@ class webrtc {
 }
 
 window.errorCatcher = function (e) {
-    console.log(e)
+    console.log('error:', e)
 }

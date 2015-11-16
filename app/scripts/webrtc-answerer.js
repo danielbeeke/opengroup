@@ -5,7 +5,6 @@ class webrtcAnswerer extends webrtc {
 
         this.peerConnection.onicecandidate = function (e) {
             if (e.candidate == null) {
-                console.log(that.peerConnection.localDescription)
                 that.onAnswerCreated(that.peerConnection.localDescription)
             }
         };

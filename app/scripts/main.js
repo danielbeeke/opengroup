@@ -4,8 +4,11 @@ if (location.hash == '#initiator') {
     webrtcInitiator.createOffer();
 
     webrtcInitiator.onOfferCreated = function (offerJSON)  {
-        var answer = prompt('Please cut the offer and paste the answer', JSON.stringify(offerJSON));
-    }
+        var answerJSON = prompt('Please cut the offer and paste the answer', JSON.stringify(offerJSON));
+        webrtcInitiator.setAnswer(answerJSON)
+    };
+
+    window.opengroupClient = webrtcInitiator
 }
 
 
@@ -16,6 +19,8 @@ if (location.hash == '#answerer') {
     webrtcAnswerer.createAnswer(offer);
 
     webrtcAnswerer.onAnswerCreated = function (answerJSON)  {
-        alert(JSON.stringify(answerJSON))
-    }
+        prompt('', JSON.stringify(answerJSON))
+    };
+
+    window.opengroupClient = webrtcAnswerer
 }
