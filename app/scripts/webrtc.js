@@ -1,17 +1,10 @@
 class webrtc {
     constructor() {
-        var that = this;
-
         this.config = {
             'iceServers': [{ 'url': 'stun:23.21.150.121' }]
         };
 
-        this.constraints = {
-            'optional': [{
-                'DtlsSrtpKeyAgreement': true,
-                'RtpDataChannels': true
-            }]
-        };
+        this.constraints = {"optional":[{"DtlsSrtpKeyAgreement":true},{"RtpDataChannels":true}],"mandatory":{}};
 
         this.sdpConstraints = {
             'mandatory': {
@@ -26,24 +19,14 @@ class webrtc {
         this.peerConnection.oniceconnectionstatechange = this.onIceConnectionStateChange;
         this.peerConnection.onicegatheringstatechange = this.onIceGatheringStateChange;
         this.peerConnection.onconnection = this.onConnection;
-
-        try {
-            this.dataChannel = this.peerConnection.createDataChannel('opengroup', { reliable: true });
-            this.dataChannel.onopen = this.onDataChannelOpen;
-            this.dataChannel.onmessage = this.onDataChannelMessage;
-            this.dataChannel.onclose = this.onDataChannelClose;
-            this.dataChannel.onerror = this.onDataChannelError;
-        } catch(e) {
-            console.log('No data channel')
-        }
     }
 
     sendMessage(message) {
         this.dataChannel.send(message);
     }
 
-    onConnection() {
-        console.info('Datachannel connected');
+    onConnection(e) {
+        console.info('Datachannel connected', e);
     }
 
     onSignalingStateChange(state) {
