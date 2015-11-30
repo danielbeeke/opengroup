@@ -12,12 +12,6 @@ class webrtcInitiator extends webrtc {
         } catch(e) {
             console.log('No data channel')
         }
-
-        this.peerConnection.onicecandidate = function (e) {
-            if (e.candidate == null) {
-                that.onOfferCreated(that.peerConnection.localDescription)
-            }
-        };
     }
 
     createOffer() {
@@ -25,6 +19,8 @@ class webrtcInitiator extends webrtc {
 
         this.peerConnection.createOffer(function(offer) {
             that.peerConnection.setLocalDescription(offer, function () {}, function () {});
+            that.offer = offer;
+            that.onOfferCreated(offer);
         }, errorCatcher, that.sdpConstraints);
     }
 

@@ -3,11 +3,22 @@ class webrtcAnswerer extends webrtc {
         super();
         var that = this;
 
+        this.peerConnection.ondatachannel = function (event) {
+            that.receiveChannelCallback(event)
+        };
+
         this.peerConnection.onicecandidate = function (e) {
             if (e.candidate == null) {
                 that.onAnswerCreated(that.peerConnection.localDescription)
             }
         };
+    }
+
+    receiveChannelCallback(event) {
+        this.dataChannel = event.channel;
+        this.dataChannel.onmessage = this.onDataChannelMessage;
+        this.dataChannel.onopen = this.onDataChannelOpen;
+        this.dataChannel.onclose = this.onDataChannelClose;
     }
 
     createAnswer(offerJSON) {

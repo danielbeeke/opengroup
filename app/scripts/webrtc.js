@@ -4,49 +4,27 @@ class webrtc {
             'iceServers': [{ 'url': 'stun:23.21.150.121' }]
         };
 
-        this.constraints = {"optional":[{"DtlsSrtpKeyAgreement":true},{"RtpDataChannels":true}],"mandatory":{}};
-
-        this.sdpConstraints = {
-            'mandatory': {
-                'OfferToReceiveAudio': false,
-                'OfferToReceiveVideo': false
-            }
-        };
-
         this.peerConnection = new RTCPeerConnection(this.config,  this.constraints);
-
-        this.peerConnection.onsignalingstatechange = this.onSignalingStateChange;
-        this.peerConnection.oniceconnectionstatechange = this.onIceConnectionStateChange;
-        this.peerConnection.onicegatheringstatechange = this.onIceGatheringStateChange;
         this.peerConnection.onconnection = this.onConnection;
+
     }
 
     sendMessage(message) {
-        this.dataChannel.send(message);
+        if (this.dataChannel) {
+            this.dataChannel.send(message);
+        }
     }
 
     onConnection(e) {
-        console.info('Datachannel connected', e);
-    }
-
-    onSignalingStateChange(state) {
-        console.info('signaling state change:', state);
-    }
-
-    onIceConnectionStateChange(state) {
-        console.info('ice connection state change:', state);
-    }
-
-    onIceGatheringStateChange(state) {
-        console.info('ice gathering state change:', state);
+        console.info('Connected', e);
     }
 
     onDataChannelOpen(e) {
-        console.log('data channel connect');
+        console.info('Datachannel connected', e);
     }
 
     onDataChannelMessage(e) {
-        console.log('message');
+        console.info('message:', e.data);
 
         if (e.data.charCodeAt(0) == 2) {
             // The first message we get from Firefox (but not Chrome)
@@ -54,8 +32,6 @@ class webrtc {
             // leave it in, JSON.parse() will barf.
             return;
         }
-
-        console.log('message:', e.data);
     }
 
     onDataChannelClose(e) {
