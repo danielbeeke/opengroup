@@ -4,7 +4,10 @@ class webrtcAnswerer extends webrtc {
         var that = this;
 
         this.peerConnection.ondatachannel = function (event) {
-            that.receiveChannelCallback(event)
+            that.dataChannel = event.channel;
+            that.dataChannel.onmessage = that.onDataChannelMessage;
+            that.dataChannel.onopen = that.onDataChannelOpen;
+            that.dataChannel.onclose = that.onDataChannelClose;
         };
 
         this.peerConnection.onicecandidate = function (e) {
@@ -12,13 +15,6 @@ class webrtcAnswerer extends webrtc {
                 that.onAnswerCreated(that.peerConnection.localDescription)
             }
         };
-    }
-
-    receiveChannelCallback(event) {
-        this.dataChannel = event.channel;
-        this.dataChannel.onmessage = this.onDataChannelMessage;
-        this.dataChannel.onopen = this.onDataChannelOpen;
-        this.dataChannel.onclose = this.onDataChannelClose;
     }
 
     createAnswer(offerJSON) {

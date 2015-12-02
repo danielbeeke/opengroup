@@ -6,7 +6,6 @@ class webrtc {
 
         this.peerConnection = new RTCPeerConnection(this.config,  this.constraints);
         this.peerConnection.onconnection = this.onConnection;
-
     }
 
     sendMessage(message) {

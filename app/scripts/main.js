@@ -1,26 +1,21 @@
 if (location.hash == '#initiator') {
-    var webrtcInitiator = new webrtcInitiator();
+    window.opengroupClient = new webrtcInitiator();
 
-    webrtcInitiator.createOffer();
-
-    webrtcInitiator.onOfferCreated = function (offerJSON)  {
-        var answerJSON = prompt('Please cut the offer and paste the answer', JSON.stringify(offerJSON));
-        webrtcInitiator.setAnswer(answerJSON)
+    // Here we have a function that get's called when the offer is created,
+    // the function returns the answer to the class.
+    opengroupClient.offerToAnswerCallback = function (offer)  {
+        return prompt('Please cut the offer and paste the answer', JSON.stringify(offer));
     };
-
-    window.opengroupClient = webrtcInitiator
 }
 
 
 if (location.hash == '#answerer') {
-    var webrtcAnswerer = new webrtcAnswerer();
+    window.opengroupClient = new webrtcAnswerer();
 
     var offer = prompt('Please paste the offer', '');
-    webrtcAnswerer.createAnswer(offer);
+    opengroupClient.createAnswer(offer);
 
-    webrtcAnswerer.onAnswerCreated = function (answerJSON)  {
+    opengroupClient.onAnswerCreated = function (answerJSON)  {
         prompt('', JSON.stringify(answerJSON))
     };
-
-    window.opengroupClient = webrtcAnswerer
 }
