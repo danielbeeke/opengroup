@@ -5,17 +5,12 @@ class webrtc {
         };
 
         this.peerConnection = new RTCPeerConnection(this.config,  this.constraints);
-        this.peerConnection.onconnection = this.onConnection;
     }
 
     sendMessage(message) {
         if (this.dataChannel) {
             this.dataChannel.send(message);
         }
-    }
-
-    onConnection(e) {
-        console.info('Connected', e);
     }
 
     onDataChannelOpen(e) {
@@ -37,9 +32,6 @@ class webrtc {
         console.log('data channel close', e);
     }
 
-    onDataChannelError(e) {
-        console.log('data channel error', e);
-    }
 }
 
 window.errorCatcher = function (e) {
